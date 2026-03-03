@@ -59,7 +59,7 @@ func init() {
 	rootCmd.Flags().StringVar(&flagState, "state", "", "Path to JSON state file (default: /tmp/progress-wrap.state.<command>)")
 	rootCmd.Flags().StringVar(&flagConfig, "config", "", "Path to TOML parser config file")
 	rootCmd.Flags().BoolVar(&flagReset, "reset", false, "Reset state before running")
-	rootCmd.Flags().StringVar(&flagEstimator, "estimator", "ema", "Estimator type: ema, kalman, or imm")
+	rootCmd.Flags().StringVar(&flagEstimator, "estimator", "imm", "Estimator type: ema, kalman, or imm")
 	rootCmd.Flags().StringVar(&flagParseRegex, "parse-regex", "", "Ad-hoc regex parser pattern")
 	rootCmd.Flags().StringVar(&flagParseJQ, "parse-jq", "", "Ad-hoc jq parser expression")
 	rootCmd.Flags().Float64Var(&flagEMAAlpha, "ema-alpha", 0.2, "EMA smoothing factor (0 < alpha <= 1)")
