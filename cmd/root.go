@@ -151,15 +151,16 @@ func runRoot(cmd *cobra.Command, args []string) error {
 			}
 		}
 		s.UpdatedAt = now
-		s.Samples = append(s.Samples, state.Sample{Time: now, Progress: progress})
 
-		// Build and update estimator
+		// Build and update estimator before appending the current sample,
+		// so that s.Samples[last] is the previous observation and
+		// est.Update(progress, now) computes a real time delta.
 		var est estimator.Estimator
 		switch flagEstimator {
 		case "kalman":
 			est = estimator.NewKalman()
 		default:
-			if len(s.Samples) > 1 && s.Estimator.EMAVelocity > 0 {
+			if len(s.Samples) > 0 && s.Estimator.EMAVelocity > 0 {
 				last := s.Samples[len(s.Samples)-1]
 				est = estimator.NewEMAFromState(s.Estimator, flagEMAAlpha, last.Progress, last.Time)
 			} else {
@@ -171,6 +172,8 @@ func runRoot(cmd *cobra.Command, args []string) error {
 		}
 		est.Update(progress, now)
 		s.Estimator = est.State()
+
+		s.Samples = append(s.Samples, state.Sample{Time: now, Progress: progress})
 
 		// Save state
 		if writeErr := state.Write(flagState, s); writeErr != nil {
