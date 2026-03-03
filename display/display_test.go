@@ -27,6 +27,8 @@ func TestDisplay_ETAFormatted(t *testing.T) {
 	assert.Contains(t, line, "ETA:")
 	assert.NotContains(t, line, "ETA: --")
 	assert.NotContains(t, line, "overdue")
+	// Wall-clock time should appear as (HH:MM:SS)
+	assert.Contains(t, line, eta.Local().Format("(15:04:05)"))
 }
 
 func TestDisplay_ETAOverdue(t *testing.T) {

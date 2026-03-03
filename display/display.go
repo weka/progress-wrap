@@ -37,11 +37,13 @@ func formatETA(eta time.Time, ok bool) string {
 	h := int(remaining.Hours())
 	m := int(remaining.Minutes()) % 60
 	s := int(remaining.Seconds()) % 60
+	var dur string
 	if h > 0 {
-		return fmt.Sprintf("%dh%dm%ds", h, m, s)
+		dur = fmt.Sprintf("%dh%dm%ds", h, m, s)
+	} else if m > 0 {
+		dur = fmt.Sprintf("%dm%ds", m, s)
+	} else {
+		dur = fmt.Sprintf("%ds", s)
 	}
-	if m > 0 {
-		return fmt.Sprintf("%dm%ds", m, s)
-	}
-	return fmt.Sprintf("%ds", s)
+	return fmt.Sprintf("%s (%s)", dur, eta.Local().Format("15:04:05"))
 }
