@@ -1,6 +1,9 @@
 package parser
 
-import "regexp"
+import (
+	"fmt"
+	"regexp"
+)
 
 // Parser extracts a progress value in [0,1] from command output.
 type Parser interface {
@@ -15,13 +18,33 @@ type Entry struct {
 	compiled     *regexp.Regexp
 }
 
+// NewEntry creates an Entry with CommandRegex pre-compiled.
+// Returns an error if CommandRegex is not a valid regular expression.
+func NewEntry(commandRegex string, p Parser) (Entry, error) {
+	e := Entry{CommandRegex: commandRegex, Parser: p}
+	if commandRegex != "" {
+		re, err := regexp.Compile(commandRegex)
+		if err != nil {
+			return Entry{}, fmt.Errorf("invalid command_regex %q: %w", commandRegex, err)
+		}
+		e.compiled = re
+	}
+	return e, nil
+}
+
 // matches reports whether cmdStr matches the entry's CommandRegex.
+// Entries created via NewEntry have the regex pre-compiled; others compile
+// lazily with a safe fallback (an invalid regex never matches).
 func (e *Entry) matches(cmdStr string) bool {
 	if e.CommandRegex == "" {
 		return true
 	}
 	if e.compiled == nil {
-		e.compiled = regexp.MustCompile(e.CommandRegex)
+		re, err := regexp.Compile(e.CommandRegex)
+		if err != nil {
+			return false
+		}
+		e.compiled = re
 	}
 	return e.compiled.MatchString(cmdStr)
 }

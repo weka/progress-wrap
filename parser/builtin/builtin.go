@@ -46,10 +46,11 @@ func loadTOML(data []byte) ([]parser.Entry, error) {
 		if err != nil {
 			return nil, err
 		}
-		entries = append(entries, parser.Entry{
-			CommandRegex: ec.CommandRegex,
-			Parser:       p,
-		})
+		entry, err := parser.NewEntry(ec.CommandRegex, p)
+		if err != nil {
+			return nil, err
+		}
+		entries = append(entries, entry)
 	}
 	return entries, nil
 }

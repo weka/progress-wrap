@@ -64,6 +64,7 @@ func init() {
 	rootCmd.Flags().StringVar(&flagParseJQ, "parse-jq", "", "Ad-hoc jq parser expression")
 	rootCmd.Flags().Float64Var(&flagEMAAlpha, "ema-alpha", 0.2, "EMA smoothing factor (0 < alpha <= 1)")
 	_ = rootCmd.MarkFlagRequired("state")
+	rootCmd.MarkFlagsMutuallyExclusive("parse-regex", "parse-jq")
 	rootCmd.Flags().SetInterspersed(false)
 }
 

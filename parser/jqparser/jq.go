@@ -24,7 +24,7 @@ func New(expression string) (*JQParser, error) {
 
 // Parse unmarshals output as JSON, runs the jq expression, and returns the
 // result divided by 100 (converting percentage to [0,1]).
-// Returns found=false if result is null or zero.
+// Returns found=false if the result is null.
 func (p *JQParser) Parse(output []byte) (float64, bool, error) {
 	var v interface{}
 	if err := json.Unmarshal(output, &v); err != nil {
@@ -46,9 +46,6 @@ func (p *JQParser) Parse(output []byte) (float64, bool, error) {
 	pct, err := toFloat64(result)
 	if err != nil {
 		return 0, false, err
-	}
-	if pct == 0 {
-		return 0, false, nil
 	}
 	return pct / 100.0, true, nil
 }

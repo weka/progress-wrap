@@ -57,10 +57,13 @@ func Read(path string) (*State, error) {
 // directory, then rename). Caps Samples at MaxSamples (retaining the
 // most recent entries).
 func Write(path string, s *State) error {
-	if len(s.Samples) > MaxSamples {
-		s.Samples = s.Samples[len(s.Samples)-MaxSamples:]
+	samples := s.Samples
+	if len(samples) > MaxSamples {
+		samples = samples[len(samples)-MaxSamples:]
 	}
-	data, err := json.MarshalIndent(s, "", "  ")
+	snapshot := *s
+	snapshot.Samples = samples
+	data, err := json.MarshalIndent(&snapshot, "", "  ")
 	if err != nil {
 		return fmt.Errorf("marshal state: %w", err)
 	}

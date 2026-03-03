@@ -47,9 +47,18 @@ func TestJQ_FieldMissing(t *testing.T) {
 	p, err := jqparser.New(".missing * 100")
 	require.NoError(t, err)
 	_, found, err := p.Parse([]byte(`{}`))
-	// null * 100 = 0 in jq; we treat 0 as not-found
+	// gojq raises a null-operand error for null * 100; treated as not-found
 	require.NoError(t, err)
 	assert.False(t, found)
+}
+
+func TestJQ_ZeroProgress(t *testing.T) {
+	p, err := jqparser.New(".progress * 100")
+	require.NoError(t, err)
+	prog, found, err := p.Parse([]byte(`{"progress": 0.0}`))
+	require.NoError(t, err)
+	assert.True(t, found, "0%% progress is a valid reading and should be reported as found")
+	assert.InDelta(t, 0.0, prog, 1e-9)
 }
 
 func TestJQ_InvalidExpression(t *testing.T) {

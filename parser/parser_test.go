@@ -5,6 +5,7 @@ import (
 
 	"github.com/baruch/progress-wrap/parser"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // mockParser always returns a fixed value
@@ -33,6 +34,17 @@ func TestSelect_NoMatch(t *testing.T) {
 	e := parser.Entry{CommandRegex: "^specific$", Parser: &mockParser{1.0}}
 	got := parser.Select("other command", []parser.Entry{e})
 	assert.Nil(t, got)
+}
+
+func TestNewEntry_InvalidRegexReturnsError(t *testing.T) {
+	_, err := parser.NewEntry(`[invalid`, &mockParser{})
+	assert.Error(t, err)
+}
+
+func TestNewEntry_ValidRegexMatchesCorrectly(t *testing.T) {
+	e, err := parser.NewEntry(`^weka status`, &mockParser{0.5})
+	require.NoError(t, err)
+	assert.Equal(t, "^weka status", e.CommandRegex)
 }
 
 func TestSelect_MultipleSourcePriority(t *testing.T) {
