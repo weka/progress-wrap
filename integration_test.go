@@ -106,3 +106,56 @@ func TestIntegration_StateFile(t *testing.T) {
 	assert.Contains(t, string(data), `"command"`)
 	assert.Contains(t, string(data), `"samples"`)
 }
+
+// TestIntegration_WekaRedist replays the 8 weka status runs from testdata/weka.redist.log
+// using injected timestamps. It verifies that the progress bar appears, ETA is unavailable
+// on the first run, and ETA is computed from the second run onward.
+func TestIntegration_WekaRedist(t *testing.T) {
+	binary := buildBinary(t)
+	stateFile := filepath.Join(t.TempDir(), "weka.state")
+
+	// fakeBinDir holds a fake "weka" binary rewritten for each run.
+	fakeBinDir := t.TempDir()
+	wekaBin := filepath.Join(fakeBinDir, "weka")
+
+	type run struct {
+		timestamp string
+		pct       string
+	}
+
+	// Timestamps and percentages taken from testdata/weka.redist.log.
+	runs := []run{
+		{"2026-03-03T18:32:28Z", "3.84615"},
+		{"2026-03-03T18:32:29Z", "10.641"},
+		{"2026-03-03T18:32:31Z", "17.9487"},
+		{"2026-03-03T18:32:32Z", "32.5641"},
+		{"2026-03-03T18:32:33Z", "68.4615"},
+		{"2026-03-03T18:32:34Z", "97.6923"},
+		{"2026-03-03T18:32:35Z", "100"},
+		{"2026-03-03T18:32:36Z", "100"},
+	}
+
+	pathEnv := "PATH=" + fakeBinDir + ":" + os.Getenv("PATH")
+
+	for i, r := range runs {
+		// Write a fake weka binary that outputs the redistribution progress line.
+		script := fmt.Sprintf("#!/bin/sh\necho '                Data redistribution in progress (%s%%)'", r.pct)
+		require.NoError(t, os.WriteFile(wekaBin, []byte(script), 0755), "write fake weka binary")
+
+		cmd := exec.Command(binary, "--state", stateFile, "weka", "status")
+		cmd.Env = append(os.Environ(), "PROGRESS_WRAP_NOW="+r.timestamp, pathEnv)
+		out, err := cmd.CombinedOutput()
+		require.NoError(t, err, "run %d failed: %s", i+1, out)
+
+		outStr := string(out)
+		t.Logf("Run %d (t=%s, pct=%s%%):\n%s", i+1, r.timestamp, r.pct, strings.TrimRight(outStr, "\n"))
+
+		assert.Contains(t, outStr, "%", "run %d: progress bar should be present", i+1)
+
+		if i == 0 {
+			assert.Contains(t, outStr, "ETA: --", "run 1: ETA unavailable with single sample")
+		} else {
+			assert.NotContains(t, outStr, "ETA: --", "run %d: ETA should be computed", i+1)
+		}
+	}
+}

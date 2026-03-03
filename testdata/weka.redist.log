@@ -1,0 +1,169 @@
+[root@kenny-0 ~] 2026-03-03 18:32:28 $ weka status
+WekaIO v4.4.10.202 (CLI build 4.4.10.202)
+
+       cluster: kenny (1da6e264-baf1-4d5f-9724-359cf47c4f48)
+        status: REDISTRIBUTING (18 backend containers UP, 6 drives UP)
+                Data redistribution in progress (3.84615%)
+    protection: 3+2 (Fully protected)
+     hot spare: 1 failure domain(s) (161.66 GiB)
+ drive storage: 808.31 GiB total, 523.91 GiB unprovisioned
+         cloud: connected
+       license: OK, valid thru 2026-03-19T16:54:26Z
+
+     io status: STARTED 11 days ago (17/18 io-nodes UP, 24 Buckets UP)
+    link layer: Ethernet
+       clients: 0 connected
+         reads: 0 B/s (0 IO/s)
+        writes: 0 B/s (0 IO/s)
+    operations: 79 ops/s
+        alerts: 3 active alerts, use `weka alerts` to list them
+   blacklisted: 1 blacklisted node, use `weka debug blacklist list` to list it
+
+[root@kenny-0 ~] 2026-03-03 18:32:29 $ weka status
+WekaIO v4.4.10.202 (CLI build 4.4.10.202)
+
+       cluster: kenny (1da6e264-baf1-4d5f-9724-359cf47c4f48)
+        status: REDISTRIBUTING (18 backend containers UP, 6 drives UP)
+                Data redistribution in progress (10.641%)
+    protection: 3+2 (Fully protected)
+     hot spare: 1 failure domain(s) (161.66 GiB)
+ drive storage: 808.31 GiB total, 523.91 GiB unprovisioned
+         cloud: connected
+       license: OK, valid thru 2026-03-19T16:54:26Z
+
+     io status: STARTED 11 days ago (17/18 io-nodes UP, 24 Buckets UP)
+    link layer: Ethernet
+       clients: 0 connected
+         reads: 0 B/s (0 IO/s)
+        writes: 0 B/s (0 IO/s)
+    operations: 74 ops/s
+        alerts: 3 active alerts, use `weka alerts` to list them
+   blacklisted: 1 blacklisted node, use `weka debug blacklist list` to list it
+
+[root@kenny-0 ~] 2026-03-03 18:32:31 $ weka status
+WekaIO v4.4.10.202 (CLI build 4.4.10.202)
+
+       cluster: kenny (1da6e264-baf1-4d5f-9724-359cf47c4f48)
+        status: REDISTRIBUTING (18 backend containers UP, 6 drives UP)
+                Data redistribution in progress (17.9487%)
+    protection: 3+2 (Fully protected)
+     hot spare: 1 failure domain(s) (161.66 GiB)
+ drive storage: 808.31 GiB total, 523.91 GiB unprovisioned
+         cloud: connected
+       license: OK, valid thru 2026-03-19T16:54:26Z
+
+     io status: STARTED 11 days ago (17/18 io-nodes UP, 24 Buckets UP)
+    link layer: Ethernet
+       clients: 0 connected
+         reads: 0 B/s (0 IO/s)
+        writes: 0 B/s (0 IO/s)
+    operations: 80 ops/s
+        alerts: 3 active alerts, use `weka alerts` to list them
+   blacklisted: 1 blacklisted node, use `weka debug blacklist list` to list it
+
+[root@kenny-0 ~] 2026-03-03 18:32:32 $ weka status
+WekaIO v4.4.10.202 (CLI build 4.4.10.202)
+
+       cluster: kenny (1da6e264-baf1-4d5f-9724-359cf47c4f48)
+        status: REDISTRIBUTING (18 backend containers UP, 6 drives UP)
+                Data redistribution in progress (32.5641%)
+    protection: 3+2 (Fully protected)
+     hot spare: 1 failure domain(s) (161.66 GiB)
+ drive storage: 808.31 GiB total, 523.91 GiB unprovisioned
+         cloud: connected
+       license: OK, valid thru 2026-03-19T16:54:26Z
+
+     io status: STARTED 11 days ago (17/18 io-nodes UP, 24 Buckets UP)
+    link layer: Ethernet
+       clients: 0 connected
+         reads: 0 B/s (0 IO/s)
+        writes: 0 B/s (0 IO/s)
+    operations: 56 ops/s
+        alerts: 3 active alerts, use `weka alerts` to list them
+   blacklisted: 1 blacklisted node, use `weka debug blacklist list` to list it
+
+[root@kenny-0 ~] 2026-03-03 18:32:33 $ weka status
+WekaIO v4.4.10.202 (CLI build 4.4.10.202)
+
+       cluster: kenny (1da6e264-baf1-4d5f-9724-359cf47c4f48)
+        status: REDISTRIBUTING (18 backend containers UP, 6 drives UP)
+                Data redistribution in progress (68.4615%)
+    protection: 3+2 (Fully protected)
+     hot spare: 1 failure domain(s) (161.66 GiB)
+ drive storage: 808.31 GiB total, 523.91 GiB unprovisioned
+         cloud: connected
+       license: OK, valid thru 2026-03-19T16:54:26Z
+
+     io status: STARTED 11 days ago (17/18 io-nodes UP, 24 Buckets UP)
+    link layer: Ethernet
+       clients: 0 connected
+         reads: 0 B/s (0 IO/s)
+        writes: 0 B/s (0 IO/s)
+    operations: 70 ops/s
+        alerts: 3 active alerts, use `weka alerts` to list them
+   blacklisted: 1 blacklisted node, use `weka debug blacklist list` to list it
+
+[root@kenny-0 ~] 2026-03-03 18:32:34 $ weka status
+WekaIO v4.4.10.202 (CLI build 4.4.10.202)
+
+       cluster: kenny (1da6e264-baf1-4d5f-9724-359cf47c4f48)
+        status: REDISTRIBUTING (18 backend containers UP, 6 drives UP)
+                Data redistribution in progress (97.6923%)
+    protection: 3+2 (Fully protected)
+     hot spare: 1 failure domain(s) (161.66 GiB)
+ drive storage: 808.31 GiB total, 523.91 GiB unprovisioned
+         cloud: connected
+       license: OK, valid thru 2026-03-19T16:54:26Z
+
+     io status: STARTED 11 days ago (17/18 io-nodes UP, 24 Buckets UP)
+    link layer: Ethernet
+       clients: 0 connected
+         reads: 0 B/s (0 IO/s)
+        writes: 0 B/s (0 IO/s)
+    operations: 72 ops/s
+        alerts: 3 active alerts, use `weka alerts` to list them
+   blacklisted: 1 blacklisted node, use `weka debug blacklist list` to list it
+
+[root@kenny-0 ~] 2026-03-03 18:32:35 $ weka status
+WekaIO v4.4.10.202 (CLI build 4.4.10.202)
+
+       cluster: kenny (1da6e264-baf1-4d5f-9724-359cf47c4f48)
+        status: REDISTRIBUTING (18 backend containers UP, 6 drives UP)
+                Data redistribution in progress (100%)
+    protection: 3+2 (Fully protected)
+     hot spare: 1 failure domain(s) (161.66 GiB)
+ drive storage: 808.31 GiB total, 523.91 GiB unprovisioned
+         cloud: connected
+       license: OK, valid thru 2026-03-19T16:54:26Z
+
+     io status: STARTED 11 days ago (17/18 io-nodes UP, 24 Buckets UP)
+    link layer: Ethernet
+       clients: 0 connected
+         reads: 0 B/s (0 IO/s)
+        writes: 0 B/s (0 IO/s)
+    operations: 72 ops/s
+        alerts: none
+   blacklisted: 1 blacklisted node, use `weka debug blacklist list` to list it
+
+[root@kenny-0 ~] 2026-03-03 18:32:36 $ weka status
+WekaIO v4.4.10.202 (CLI build 4.4.10.202)
+
+       cluster: kenny (1da6e264-baf1-4d5f-9724-359cf47c4f48)
+        status: REDISTRIBUTING (18 backend containers UP, 6 drives UP)
+                Data redistribution in progress (100%)
+    protection: 3+2 (Fully protected)
+     hot spare: 1 failure domain(s) (161.66 GiB)
+ drive storage: 808.31 GiB total, 523.91 GiB unprovisioned
+         cloud: connected
+       license: OK, valid thru 2026-03-19T16:54:26Z
+
+     io status: STARTED 11 days ago (17/18 io-nodes UP, 24 Buckets UP)
+    link layer: Ethernet
+       clients: 0 connected
+         reads: 0 B/s (0 IO/s)
+        writes: 0 B/s (0 IO/s)
+    operations: 63 ops/s
+        alerts: none
+   blacklisted: 1 blacklisted node, use `weka debug blacklist list` to list it
+
+[root@kenny-0 ~] 2026-03-03 18:32:37 $ 

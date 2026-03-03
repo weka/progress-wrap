@@ -35,6 +35,19 @@ var rootCmd = &cobra.Command{
 	RunE:  runRoot,
 }
 
+// now returns the current UTC time, or a time parsed from PROGRESS_WRAP_NOW
+// if set (used for deterministic testing).
+func now() time.Time {
+	if v := os.Getenv("PROGRESS_WRAP_NOW"); v != "" {
+		for _, layout := range []string{time.RFC3339Nano, time.RFC3339} {
+			if t, err := time.Parse(layout, v); err == nil {
+				return t
+			}
+		}
+	}
+	return time.Now().UTC()
+}
+
 // Execute runs the root command.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
@@ -122,7 +135,7 @@ func runRoot(cmd *cobra.Command, args []string) error {
 	}
 
 	if found {
-		now := time.Now().UTC()
+		now := now()
 
 		// Auto-reset if progress went backward
 		if state.ShouldAutoReset(s, progress) {

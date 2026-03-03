@@ -22,8 +22,8 @@ func TestBuiltins_WekaStatusRegex(t *testing.T) {
 	p := parser.Select("weka status", entries)
 	require.NotNil(t, p, "expected a parser for 'weka status'")
 
-	// Simulate weka status text output with a Progress: line
-	sampleOutput := []byte("Status: OK\nProgress: 42.0%\nNodes: 5\n")
+	// Simulate real weka status text output with the redistribution progress line
+	sampleOutput := []byte("       status: REDISTRIBUTING\n                Data redistribution in progress (42.0%)\n   protection: 3+2\n")
 	prog, found, err := p.Parse(sampleOutput)
 	require.NoError(t, err)
 	assert.True(t, found)
