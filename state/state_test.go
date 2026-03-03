@@ -3,6 +3,7 @@ package state_test
 import (
 	"os"
 	"path/filepath"
+	"sync"
 	"testing"
 	"time"
 
@@ -55,13 +56,45 @@ func TestState_ReadCorruptFile(t *testing.T) {
 }
 
 func TestState_WriteIsAtomic(t *testing.T) {
-	path := tempPath(t)
+	dir := t.TempDir()
+	path := filepath.Join(dir, "test.state")
 	s := &state.State{Command: "test"}
 	require.NoError(t, state.Write(path, s))
 
-	// .tmp file should not remain after successful write
-	_, err := os.Stat(path + ".tmp")
-	assert.True(t, os.IsNotExist(err))
+	// No temp files should remain after a successful write.
+	entries, err := os.ReadDir(dir)
+	require.NoError(t, err)
+	for _, e := range entries {
+		assert.False(t, filepath.Ext(e.Name()) == ".tmp", "leftover temp file: %s", e.Name())
+	}
+}
+
+func TestState_ParallelWritesSafe(t *testing.T) {
+	path := tempPath(t)
+
+	// Pre-create a valid state file.
+	initial := &state.State{Command: "test", Samples: []state.Sample{{Progress: 0.1}}}
+	require.NoError(t, state.Write(path, initial))
+
+	const workers = 20
+	var wg sync.WaitGroup
+	wg.Add(workers)
+	for i := range workers {
+		go func(i int) {
+			defer wg.Done()
+			s := &state.State{
+				Command: "test",
+				Samples: []state.Sample{{Progress: float64(i) / workers}},
+			}
+			assert.NoError(t, state.Write(path, s))
+		}(i)
+	}
+	wg.Wait()
+
+	// State file must be valid JSON after all concurrent writes.
+	result, err := state.Read(path)
+	require.NoError(t, err)
+	assert.NotNil(t, result)
 }
 
 func TestState_SampleCap(t *testing.T) {

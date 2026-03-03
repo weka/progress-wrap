@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -52,8 +53,9 @@ func Read(path string) (*State, error) {
 	return &s, nil
 }
 
-// Write serializes s to path atomically (write to path+".tmp", then rename).
-// Caps Samples at MaxSamples (retaining the most recent entries).
+// Write serializes s to path atomically (unique temp file in the same
+// directory, then rename). Caps Samples at MaxSamples (retaining the
+// most recent entries).
 func Write(path string, s *State) error {
 	if len(s.Samples) > MaxSamples {
 		s.Samples = s.Samples[len(s.Samples)-MaxSamples:]
@@ -62,11 +64,22 @@ func Write(path string, s *State) error {
 	if err != nil {
 		return fmt.Errorf("marshal state: %w", err)
 	}
-	tmp := path + ".tmp"
-	if err := os.WriteFile(tmp, data, 0644); err != nil {
+	f, err := os.CreateTemp(filepath.Dir(path), ".state-*.tmp")
+	if err != nil {
+		return fmt.Errorf("create state temp file: %w", err)
+	}
+	tmp := f.Name()
+	if _, err := f.Write(data); err != nil {
+		f.Close()
+		os.Remove(tmp)
 		return fmt.Errorf("write state temp file: %w", err)
 	}
+	if err := f.Close(); err != nil {
+		os.Remove(tmp)
+		return fmt.Errorf("close state temp file: %w", err)
+	}
 	if err := os.Rename(tmp, path); err != nil {
+		os.Remove(tmp)
 		return fmt.Errorf("rename state file: %w", err)
 	}
 	return nil
