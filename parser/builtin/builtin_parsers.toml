@@ -10,8 +10,8 @@ expression    = ".progress * 100"
 [[parsers]]
 command_regex = '^weka status'
 type          = "regex"
-pattern       = 'Data redistribution in progress \((\d+(?:\.\d+)?)%\)'
-group         = 1
+pattern       = '(Data redistribution in progress|Rebuild in progress) \((\d+(?:\.\d+)?)%\)'
+group         = 2
 
 # Generic catch-all: matches any command whose output contains "Progress: X%"
 [[parsers]]
