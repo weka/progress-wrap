@@ -82,7 +82,8 @@ func (e *EMA) ETA() (time.Time, bool) {
 func (e *EMA) State() state.EstimatorState {
 	return state.EstimatorState{
 		Type:         TypeEMA,
-		EMAVelocity:  e.velocity,
+		Velocity:     e.velocity,
 		Acceleration: e.accel,
+		EMAVelocity:  e.velocity,
 	}
 }

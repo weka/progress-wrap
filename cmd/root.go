@@ -212,7 +212,7 @@ func runRoot(cmd *cobra.Command, args []string) error {
 		// Render and print progress bar
 		eta, etaOK := est.ETA()
 		estState := est.State()
-		line := display.Render(progress, eta, etaOK, estState.EMAVelocity, estState.Acceleration, display.TermWidth())
+		line := display.Render(progress, eta, etaOK, estState.Velocity, estState.Acceleration, display.TermWidth())
 		fmt.Println(line)
 	}
 

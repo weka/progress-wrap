@@ -113,6 +113,7 @@ func (k *Kalman) ETA() (time.Time, bool) {
 func (k *Kalman) State() state.EstimatorState {
 	return state.EstimatorState{
 		Type:      TypeKalman,
+		Velocity:  k.vel,
 		KalmanPos: k.pos,
 		KalmanVel: k.vel,
 		KalmanP00: k.p00,
