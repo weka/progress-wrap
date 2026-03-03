@@ -6,10 +6,11 @@ import (
 	"github.com/baruch/progress-wrap/state"
 )
 
-// EMA is an exponential-moving-average velocity estimator.
+// EMA is an exponential-moving-average velocity and acceleration estimator.
 type EMA struct {
 	alpha    float64
 	velocity float64
+	accel    float64 // EMA of instantaneous acceleration (velocity/s)
 	lastTime time.Time
 	lastProg float64
 	count    int
@@ -22,13 +23,18 @@ func NewEMA(alpha float64) *EMA {
 
 // NewEMAFromState restores an EMA estimator from persisted state.
 func NewEMAFromState(s state.EstimatorState, alpha, lastProg float64, lastTime time.Time) *EMA {
-	return &EMA{
+	e := &EMA{
 		alpha:    alpha,
 		velocity: s.EMAVelocity,
+		accel:    s.Acceleration,
 		lastTime: lastTime,
 		lastProg: lastProg,
 		count:    2, // enough to emit ETA
 	}
+	if s.Acceleration != 0 {
+		e.count = 3 // treat restored accel as the EMA prior
+	}
+	return e
 }
 
 // Update records a new progress observation.
@@ -44,10 +50,17 @@ func (e *EMA) Update(progress float64, t time.Time) {
 		return
 	}
 	instant := (progress - e.lastProg) / dt
+	prevVelocity := e.velocity
 	if e.count == 1 {
 		e.velocity = instant
 	} else {
 		e.velocity = e.alpha*instant + (1-e.alpha)*e.velocity
+		instantAccel := (e.velocity - prevVelocity) / dt
+		if e.count == 2 {
+			e.accel = instantAccel
+		} else {
+			e.accel = e.alpha*instantAccel + (1-e.alpha)*e.accel
+		}
 	}
 	e.lastTime = t
 	e.lastProg = progress
@@ -68,7 +81,8 @@ func (e *EMA) ETA() (time.Time, bool) {
 // State returns the serializable estimator state.
 func (e *EMA) State() state.EstimatorState {
 	return state.EstimatorState{
-		Type:        TypeEMA,
-		EMAVelocity: e.velocity,
+		Type:         TypeEMA,
+		EMAVelocity:  e.velocity,
+		Acceleration: e.accel,
 	}
 }

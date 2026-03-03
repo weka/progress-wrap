@@ -13,10 +13,12 @@ const minBarWidth = 12
 
 // Render returns a single-line progress bar string sized to termWidth columns.
 // velocity is in progress-units/second (e.g. 0.005 = 0.5%/s).
-func Render(progress float64, eta time.Time, etaOK bool, velocity float64, termWidth int) string {
+// accel is in progress-units/second² (e.g. 0.0001 = 0.01%/s²).
+func Render(progress float64, eta time.Time, etaOK bool, velocity, accel float64, termWidth int) string {
 	etaStr := formatETA(eta, etaOK)
 	velStr := fmt.Sprintf("%.3f%%/s", velocity*100)
-	suffix := fmt.Sprintf(" %.1f%%  ETA: %s  (avg velocity: %s)", progress*100, etaStr, velStr)
+	accelStr := fmt.Sprintf("%+.3f%%/s²", accel*100)
+	suffix := fmt.Sprintf(" %.1f%%  ETA: %s  (avg velocity: %s  accel: %s)", progress*100, etaStr, velStr, accelStr)
 
 	barOuter := termWidth - len(suffix)
 	if barOuter < minBarWidth {

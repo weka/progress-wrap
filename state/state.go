@@ -23,13 +23,14 @@ type Sample struct {
 
 // EstimatorState holds serializable estimator data.
 type EstimatorState struct {
-	Type        string  `json:"type"`
-	EMAVelocity float64 `json:"ema_velocity,omitempty"`
-	KalmanPos   float64 `json:"kalman_pos,omitempty"`
-	KalmanVel   float64 `json:"kalman_vel,omitempty"`
-	KalmanP00   float64 `json:"kalman_p00,omitempty"`
-	KalmanP01   float64 `json:"kalman_p01,omitempty"`
-	KalmanP11   float64 `json:"kalman_p11,omitempty"`
+	Type         string  `json:"type"`
+	EMAVelocity  float64 `json:"ema_velocity,omitempty"`
+	Acceleration float64 `json:"acceleration,omitempty"`
+	KalmanPos    float64 `json:"kalman_pos,omitempty"`
+	KalmanVel    float64 `json:"kalman_vel,omitempty"`
+	KalmanP00    float64 `json:"kalman_p00,omitempty"`
+	KalmanP01    float64 `json:"kalman_p01,omitempty"`
+	KalmanP11    float64 `json:"kalman_p11,omitempty"`
 }
 
 // State is the full contents of a state file.
