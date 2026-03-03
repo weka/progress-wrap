@@ -10,6 +10,7 @@ import (
 const (
 	TypeEMA    = "ema"
 	TypeKalman = "kalman"
+	TypeIMM    = "imm"
 )
 
 // Estimator tracks progress samples and produces ETA predictions.

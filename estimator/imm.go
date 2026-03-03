@@ -2,6 +2,8 @@ package estimator
 
 import (
 	"math"
+
+	"github.com/baruch/progress-wrap/state"
 )
 
 // IMM noise and switching parameters.
@@ -216,6 +218,30 @@ func (imm *IMM) Update(ts, progressPct float64) (etaSec, velPctPerSec float64, p
 		return 0, vel, probs
 	}
 	return remaining / vel, vel, probs
+}
+
+// Snapshot captures the full filter state for persistence.
+func (imm *IMM) Snapshot() *state.IMMSnapshot {
+	return &state.IMMSnapshot{
+		PrevTs: imm.prevTs,
+		Mu:     imm.mu,
+		M0X:    imm.models[0].x,
+		M0P:    imm.models[0].P,
+		M1X:    imm.models[1].x,
+		M1P:    imm.models[1].P,
+		Count:  imm.count,
+	}
+}
+
+// restoreFromSnapshot loads a previously saved filter state.
+func (imm *IMM) restoreFromSnapshot(snap *state.IMMSnapshot) {
+	imm.prevTs = snap.PrevTs
+	imm.mu = snap.Mu
+	imm.models[0].x = snap.M0X
+	imm.models[0].P = snap.M0P
+	imm.models[1].x = snap.M1X
+	imm.models[1].P = snap.M1P
+	imm.count = snap.Count
 }
 
 // ── Kinematic model helpers ───────────────────────────────────────────────────

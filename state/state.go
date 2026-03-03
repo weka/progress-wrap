@@ -21,17 +21,29 @@ type Sample struct {
 	Progress float64   `json:"progress"`
 }
 
+// IMMSnapshot is the full persisted state of the IMM Kalman filter.
+type IMMSnapshot struct {
+	PrevTs float64       `json:"prev_ts"`
+	Mu     [2]float64    `json:"mu"`
+	M0X    [3]float64    `json:"m0_x"`
+	M0P    [3][3]float64 `json:"m0_p"`
+	M1X    [3]float64    `json:"m1_x"`
+	M1P    [3][3]float64 `json:"m1_p"`
+	Count  int           `json:"count"`
+}
+
 // EstimatorState holds serializable estimator data.
 type EstimatorState struct {
 	Type         string  `json:"type"`
 	Velocity     float64 `json:"velocity,omitempty"`     // current velocity for display (all estimators)
 	Acceleration float64 `json:"acceleration,omitempty"` // current acceleration for display (EMA only)
 	EMAVelocity  float64 `json:"ema_velocity,omitempty"` // EMA-specific: used for state restoration
-	KalmanPos    float64 `json:"kalman_pos,omitempty"`
-	KalmanVel    float64 `json:"kalman_vel,omitempty"`
-	KalmanP00    float64 `json:"kalman_p00,omitempty"`
-	KalmanP01    float64 `json:"kalman_p01,omitempty"`
-	KalmanP11    float64 `json:"kalman_p11,omitempty"`
+	KalmanPos    float64       `json:"kalman_pos,omitempty"`
+	KalmanVel    float64       `json:"kalman_vel,omitempty"`
+	KalmanP00    float64       `json:"kalman_p00,omitempty"`
+	KalmanP01    float64       `json:"kalman_p01,omitempty"`
+	KalmanP11    float64       `json:"kalman_p11,omitempty"`
+	IMMSnapshot  *IMMSnapshot  `json:"imm_snapshot,omitempty"`
 }
 
 // State is the full contents of a state file.

@@ -59,7 +59,7 @@ func init() {
 	rootCmd.Flags().StringVar(&flagState, "state", "", "Path to JSON state file (default: /tmp/progress-wrap.state.<command>)")
 	rootCmd.Flags().StringVar(&flagConfig, "config", "", "Path to TOML parser config file")
 	rootCmd.Flags().BoolVar(&flagReset, "reset", false, "Reset state before running")
-	rootCmd.Flags().StringVar(&flagEstimator, "estimator", "ema", "Estimator type: ema or kalman")
+	rootCmd.Flags().StringVar(&flagEstimator, "estimator", "ema", "Estimator type: ema, kalman, or imm")
 	rootCmd.Flags().StringVar(&flagParseRegex, "parse-regex", "", "Ad-hoc regex parser pattern")
 	rootCmd.Flags().StringVar(&flagParseJQ, "parse-jq", "", "Ad-hoc jq parser expression")
 	rootCmd.Flags().Float64Var(&flagEMAAlpha, "ema-alpha", 0.2, "EMA smoothing factor (0 < alpha <= 1)")
@@ -178,6 +178,16 @@ func runRoot(cmd *cobra.Command, args []string) error {
 		// est.Update(progress, now) computes a real time delta.
 		var est estimator.Estimator
 		switch flagEstimator {
+		case estimator.TypeIMM:
+			if s.Estimator.IMMSnapshot != nil {
+				est = estimator.NewIMMEstimatorFromState(s.Estimator.IMMSnapshot)
+			} else {
+				imme := estimator.NewIMMEstimator()
+				for _, sample := range s.Samples {
+					imme.Update(sample.Progress, sample.Time)
+				}
+				est = imme
+			}
 		case estimator.TypeKalman:
 			if len(s.Samples) > 0 && s.Estimator.KalmanP11 > 0 {
 				last := s.Samples[len(s.Samples)-1]
