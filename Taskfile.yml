@@ -71,7 +71,19 @@ tasks:
       - rm -f progress-wrap
 
   release:tag:
-    desc: "Tag a release and push to trigger the release workflow. Usage: task release:tag -- v1.2.3"
+    desc: Tag a release and push to trigger the release workflow
     cmds:
+      - |
+        if [ -z "{{.CLI_ARGS}}" ]; then
+          echo ""
+          echo "  Usage: task release:tag -- <version>"
+          echo ""
+          echo "  Example: task release:tag -- v1.2.3"
+          echo ""
+          echo "  Creates an annotated git tag and pushes it, which triggers"
+          echo "  the GitHub Actions release workflow to build and publish binaries."
+          echo ""
+          exit 1
+        fi
       - git tag -a {{.CLI_ARGS}} -m "Release {{.CLI_ARGS}}"
       - git push origin {{.CLI_ARGS}}
