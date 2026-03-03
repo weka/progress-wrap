@@ -7,10 +7,13 @@ import (
 )
 
 // TermWidth returns the current terminal width, falling back to 80.
+// It probes stderr first (which remains a TTY even when stdout is piped),
+// then stdout, then stdin.
 func TermWidth() int {
-	w, _, err := term.GetSize(int(os.Stdout.Fd()))
-	if err != nil || w <= 0 {
-		return 80
+	for _, f := range []*os.File{os.Stderr, os.Stdout, os.Stdin} {
+		if w, _, err := term.GetSize(int(f.Fd())); err == nil && w > 0 {
+			return w
+		}
 	}
-	return w
+	return 80
 }
