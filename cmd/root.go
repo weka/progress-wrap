@@ -56,20 +56,40 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.Flags().StringVar(&flagState, "state", "", "Path to JSON state file (required)")
+	rootCmd.Flags().StringVar(&flagState, "state", "", "Path to JSON state file (default: /tmp/progress-wrap.state.<command>)")
 	rootCmd.Flags().StringVar(&flagConfig, "config", "", "Path to TOML parser config file")
 	rootCmd.Flags().BoolVar(&flagReset, "reset", false, "Reset state before running")
 	rootCmd.Flags().StringVar(&flagEstimator, "estimator", "ema", "Estimator type: ema or kalman")
 	rootCmd.Flags().StringVar(&flagParseRegex, "parse-regex", "", "Ad-hoc regex parser pattern")
 	rootCmd.Flags().StringVar(&flagParseJQ, "parse-jq", "", "Ad-hoc jq parser expression")
 	rootCmd.Flags().Float64Var(&flagEMAAlpha, "ema-alpha", 0.2, "EMA smoothing factor (0 < alpha <= 1)")
-	_ = rootCmd.MarkFlagRequired("state")
 	rootCmd.MarkFlagsMutuallyExclusive("parse-regex", "parse-jq")
 	rootCmd.Flags().SetInterspersed(false)
 }
 
+// defaultStatePath returns the default state file path for the given command
+// string. Any character outside [A-Za-z0-9._-] is replaced with an underscore
+// so the result is safe to use as a filename component.
+func defaultStatePath(cmdStr string) string {
+	var b strings.Builder
+	for _, r := range cmdStr {
+		switch {
+		case r >= 'a' && r <= 'z', r >= 'A' && r <= 'Z',
+			r >= '0' && r <= '9', r == '.', r == '-':
+			b.WriteRune(r)
+		default:
+			b.WriteRune('_')
+		}
+	}
+	return "/tmp/progress-wrap.state." + b.String()
+}
+
 func runRoot(cmd *cobra.Command, args []string) error {
 	cmdStr := strings.Join(args, " ")
+
+	if flagState == "" {
+		flagState = defaultStatePath(cmdStr)
+	}
 
 	// Handle --reset
 	if flagReset {
