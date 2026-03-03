@@ -18,5 +18,5 @@ func (k *Kalman) Update(_ float64, _ time.Time) {}
 func (k *Kalman) ETA() (time.Time, bool) { return time.Time{}, false }
 
 func (k *Kalman) State() state.EstimatorState {
-	return state.EstimatorState{Type: "kalman"}
+	return state.EstimatorState{Type: TypeKalman}
 }

@@ -158,7 +158,7 @@ func runRoot(cmd *cobra.Command, args []string) error {
 		// est.Update(progress, now) computes a real time delta.
 		var est estimator.Estimator
 		switch flagEstimator {
-		case "kalman":
+		case estimator.TypeKalman:
 			est = estimator.NewKalman()
 		default:
 			if len(s.Samples) > 0 && s.Estimator.EMAVelocity > 0 {

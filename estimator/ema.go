@@ -68,7 +68,7 @@ func (e *EMA) ETA() (time.Time, bool) {
 // State returns the serializable estimator state.
 func (e *EMA) State() state.EstimatorState {
 	return state.EstimatorState{
-		Type:        "ema",
+		Type:        TypeEMA,
 		EMAVelocity: e.velocity,
 	}
 }

@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+// minBarWidth is the minimum number of columns reserved for the bar itself
+// (the [...] portion, excluding the suffix). Prevents the bar from collapsing
+// to nothing on very narrow terminals.
+const minBarWidth = 12
+
 // Render returns a single-line progress bar string sized to termWidth columns.
 // velocity is in progress-units/second (e.g. 0.005 = 0.5%/s).
 func Render(progress float64, eta time.Time, etaOK bool, velocity float64, termWidth int) string {
@@ -14,8 +19,8 @@ func Render(progress float64, eta time.Time, etaOK bool, velocity float64, termW
 	suffix := fmt.Sprintf(" %.1f%%  ETA: %s  (avg velocity: %s)", progress*100, etaStr, velStr)
 
 	barOuter := termWidth - len(suffix)
-	if barOuter < 12 {
-		barOuter = 12
+	if barOuter < minBarWidth {
+		barOuter = minBarWidth
 	}
 	inner := barOuter - 2 // subtract [ and ]
 	filled := int(progress * float64(inner))

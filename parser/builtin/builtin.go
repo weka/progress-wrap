@@ -55,15 +55,20 @@ func loadTOML(data []byte) ([]parser.Entry, error) {
 	return entries, nil
 }
 
+const (
+	typeRegex = "regex"
+	typeJQ    = "jq"
+)
+
 func buildParser(ec entryConfig) (parser.Parser, error) {
 	switch ec.Type {
-	case "regex":
+	case typeRegex:
 		g := ec.Group
 		if g == 0 {
 			g = 1
 		}
 		return regexparser.New(ec.Pattern, g)
-	case "jq":
+	case typeJQ:
 		return jqparser.New(ec.Expression)
 	default:
 		return nil, fmt.Errorf("unknown parser type %q", ec.Type)
