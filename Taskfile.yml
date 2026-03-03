@@ -14,7 +14,7 @@ tasks:
   build:
     desc: Build the progress-wrap binary
     cmds:
-      - go build -o progress-wrap .
+      - CGO_ENABLED=0 go build -o progress-wrap .
     sources:
       - '**/*.go'
       - go.mod
