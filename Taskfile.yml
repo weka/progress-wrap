@@ -1,0 +1,70 @@
+version: '3'
+
+tasks:
+  default:
+    desc: Run all checks (tidy, vet, lint, test, build)
+    cmds:
+      - task: tidy
+      - task: vet
+      - task: lint
+      - task: test
+      - task: build
+    silent: true
+
+  build:
+    desc: Build the progress-wrap binary
+    cmds:
+      - go build -o progress-wrap .
+    sources:
+      - '**/*.go'
+      - go.mod
+    generates:
+      - progress-wrap
+
+  vet:
+    desc: Run go vet
+    cmds:
+      - go vet ./...
+
+  lint:
+    desc: Run go vet (always available) + staticcheck if version-compatible
+    cmds:
+      - go vet ./...
+      - staticcheck ./... || true
+
+  lint:strict:
+    desc: Run staticcheck (requires staticcheck built with same Go version)
+    cmds:
+      - staticcheck ./...
+
+  test:
+    desc: Run unit tests
+    cmds:
+      - go test ./...
+
+  test:verbose:
+    desc: Run unit tests with verbose output
+    cmds:
+      - go test -v ./...
+
+  test:integration:
+    desc: Build binary and run integration tests
+    deps: [build]
+    cmds:
+      - go test -tags integration -v ./...
+
+  test:all:
+    desc: Run unit tests and integration tests
+    cmds:
+      - task: test
+      - task: test:integration
+
+  tidy:
+    desc: Tidy go modules
+    cmds:
+      - go mod tidy
+
+  clean:
+    desc: Remove the built binary
+    cmds:
+      - rm -f progress-wrap
