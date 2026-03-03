@@ -12,3 +12,10 @@ command_regex = '^weka status'
 type          = "regex"
 pattern       = 'Progress:\s*(\d+(?:\.\d+)?)\s*%'
 group         = 1
+
+# Generic catch-all: matches any command whose output contains "Progress: X%"
+[[parsers]]
+command_regex = ''
+type          = "regex"
+pattern       = 'Progress:\s*(\d+(?:\.\d+)?)\s*%'
+group         = 1
