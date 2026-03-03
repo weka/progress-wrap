@@ -17,6 +17,7 @@ tasks:
       - CGO_ENABLED=0 go build -o progress-wrap .
     sources:
       - '**/*.go'
+      - '**/*.toml'
       - go.mod
     generates:
       - progress-wrap
