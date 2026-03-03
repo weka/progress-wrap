@@ -1,0 +1,14 @@
+# Built-in parsers for known commands.
+# Entries are tested in order; first command_regex match wins.
+# command_regex is matched against the full command string.
+
+[[parsers]]
+command_regex = '^weka status -J'
+type          = "jq"
+expression    = ".progress * 100"
+
+[[parsers]]
+command_regex = '^weka status'
+type          = "regex"
+pattern       = 'Progress:\s*(\d+(?:\.\d+)?)\s*%'
+group         = 1
