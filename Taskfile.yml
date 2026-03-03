@@ -69,3 +69,9 @@ tasks:
     desc: Remove the built binary
     cmds:
       - rm -f progress-wrap
+
+  release:tag:
+    desc: "Tag a release and push to trigger the release workflow. Usage: task release:tag -- v1.2.3"
+    cmds:
+      - git tag -a {{.CLI_ARGS}} -m "Release {{.CLI_ARGS}}"
+      - git push origin {{.CLI_ARGS}}
