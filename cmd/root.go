@@ -159,7 +159,15 @@ func runRoot(cmd *cobra.Command, args []string) error {
 		var est estimator.Estimator
 		switch flagEstimator {
 		case estimator.TypeKalman:
-			est = estimator.NewKalman()
+			if len(s.Samples) > 0 && s.Estimator.KalmanP11 > 0 {
+				last := s.Samples[len(s.Samples)-1]
+				est = estimator.NewKalmanFromState(s.Estimator, last.Time)
+			} else {
+				est = estimator.NewKalman()
+				for _, sample := range s.Samples {
+					est.Update(sample.Progress, sample.Time)
+				}
+			}
 		default:
 			if len(s.Samples) > 0 && s.Estimator.EMAVelocity > 0 {
 				last := s.Samples[len(s.Samples)-1]
