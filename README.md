@@ -14,6 +14,11 @@ The demo above shows `progress-wrap` wrapping a simulated command whose speed fo
 
 ## Installation
 
+Pre-built binaries for Linux, macOS, and Windows are available on the
+[Releases page](https://github.com/baruch/progress-wrap/releases/latest).
+
+Or install with Go:
+
 ```bash
 go install github.com/baruch/progress-wrap@latest
 ```
