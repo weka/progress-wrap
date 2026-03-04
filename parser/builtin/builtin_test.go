@@ -132,3 +132,39 @@ func TestBuiltins_WekaStatusJSON(t *testing.T) {
 	assert.True(t, found)
 	assert.InDelta(t, 0.65, prog, 1e-9)
 }
+
+func TestBuiltins_BtrfsScrubStatus(t *testing.T) {
+	entries, err := builtin.Load()
+	require.NoError(t, err)
+
+	output := []byte(`UUID:             76fac721-2294-4f89-a1af-620cde7a1980
+Scrub started:    Wed Apr 10 12:34:56 2023
+Status:           running
+Duration:         0:00:05
+Time left:        0:00:05
+ETA:              Wed Apr 10 12:35:01 2023
+Total to scrub:   28.32GiB
+Bytes scrubbed:   13.76GiB  (48.59%)
+Rate:             2.75GiB/s
+Error summary:    no errors found
+`)
+
+	cases := []struct {
+		command string
+	}{
+		{"btrfs scrub status /"},
+		{"btrfs scrub status /mnt/data"},
+		{"btrfs scrub status /dev/sda1"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.command, func(t *testing.T) {
+			entry := parser.Select(tc.command, entries)
+			require.NotNil(t, entry, "expected a parser for %q", tc.command)
+
+			prog, found, err := entry.Parser.Parse(output)
+			require.NoError(t, err)
+			assert.True(t, found)
+			assert.InDelta(t, 0.4859, prog, 1e-6)
+		})
+	}
+}

@@ -24,6 +24,14 @@ pattern       = '(\d+(?:\.\d+)?)\s+(?:True|False)'
 group         = 1
 estimator     = "ema"
 
+[[parsers]]
+command_regex = '^btrfs scrub status'
+type          = "regex"
+# Matches the percentage in "Bytes scrubbed: 13.76GiB  (48.59%)"
+# command_regex stops before the device/mount path, so it matches any target.
+pattern       = 'Bytes scrubbed:.*\((\d+(?:\.\d+)?)%\)'
+group         = 1
+
 # Generic catch-all: matches any command whose output contains "Progress: X%"
 [[parsers]]
 command_regex = ''
