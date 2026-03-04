@@ -69,3 +69,20 @@ func TestSelect_NoEstimatorHint(t *testing.T) {
 	require.NotNil(t, got)
 	assert.Equal(t, "", got.Estimator) // caller uses global default
 }
+
+func TestSelect_MultipleSpacesInCommandMatch(t *testing.T) {
+	e, err := parser.NewEntry("^weka cluster task", &mockParser{0.5})
+	require.NoError(t, err)
+
+	cases := []string{
+		"weka cluster task",
+		"weka  cluster  task",
+		"weka   cluster    task",
+		"weka cluster task | grep -w 984",
+		"weka  cluster  task | grep -w FSCK",
+	}
+	for _, cmd := range cases {
+		got := parser.Select(cmd, []parser.Entry{e})
+		assert.NotNil(t, got, "expected match for %q", cmd)
+	}
+}

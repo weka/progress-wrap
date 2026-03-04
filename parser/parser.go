@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 // Parser extracts a progress value in [0,1] from command output.
@@ -20,12 +21,19 @@ type Entry struct {
 	compiled     *regexp.Regexp
 }
 
+// normalizeCommandRegex replaces literal spaces in a command_regex pattern with
+// \s+ so that entries like "weka cluster task" match the command string
+// regardless of how many spaces appear between tokens.
+func normalizeCommandRegex(pattern string) string {
+	return strings.ReplaceAll(pattern, " ", `\s+`)
+}
+
 // NewEntry creates an Entry with CommandRegex pre-compiled.
 // Returns an error if CommandRegex is not a valid regular expression.
 func NewEntry(commandRegex string, p Parser) (Entry, error) {
 	e := Entry{CommandRegex: commandRegex, Parser: p}
 	if commandRegex != "" {
-		re, err := regexp.Compile(commandRegex)
+		re, err := regexp.Compile(normalizeCommandRegex(commandRegex))
 		if err != nil {
 			return Entry{}, fmt.Errorf("invalid command_regex %q: %w", commandRegex, err)
 		}
@@ -42,7 +50,7 @@ func (e *Entry) matches(cmdStr string) bool {
 		return true
 	}
 	if e.compiled == nil {
-		re, err := regexp.Compile(e.CommandRegex)
+		re, err := regexp.Compile(normalizeCommandRegex(e.CommandRegex))
 		if err != nil {
 			return false
 		}
