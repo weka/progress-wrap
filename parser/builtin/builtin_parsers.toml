@@ -13,6 +13,16 @@ type          = "regex"
 pattern       = '(Data redistribution in progress|Rebuild in progress) \((\d+(?:\.\d+)?)%\)'
 group         = 2
 
+[[parsers]]
+command_regex = '^weka cluster task'
+type          = "regex"
+# Matches the PROGRESS column, which is always followed by True/False (USER PAUSED).
+# Covers plain invocations and grepped variants, e.g.:
+#   weka cluster task | grep -w 984
+#   weka cluster task | grep -w FSCK
+pattern       = '(\d+(?:\.\d+)?)\s+(?:True|False)'
+group         = 1
+
 # Generic catch-all: matches any command whose output contains "Progress: X%"
 [[parsers]]
 command_regex = ''
