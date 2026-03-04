@@ -86,6 +86,12 @@ func defaultStatePath(cmdStr string) string {
 	return "/tmp/progress-wrap.state." + b.String()
 }
 
+// needsShell reports whether s contains characters that require a shell
+// interpreter (pipes, redirects, subshells, etc.).
+func needsShell(s string) bool {
+	return strings.ContainsAny(s, `|&;<>(){}` + "`")
+}
+
 func runRoot(cmd *cobra.Command, args []string) error {
 	cmdStr := strings.Join(args, " ")
 
@@ -159,8 +165,19 @@ func runRoot(cmd *cobra.Command, args []string) error {
 
 	dbg.Header(now(), cmdStr, flagState, activeEstimator)
 
-	// Run the wrapped command
-	stdout, exitCode, runErr := runner.Run(args[0], args[1:])
+	// Run the wrapped command, routing through the shell when the command
+	// string contains metacharacters (pipes, redirects, etc.) so that
+	// single-argument forms like 'weka cluster task | grep -w FSCK' work.
+	var runName string
+	var runArgs []string
+	if len(args) == 1 && needsShell(args[0]) {
+		runName = "sh"
+		runArgs = []string{"-c", args[0]}
+	} else {
+		runName = args[0]
+		runArgs = args[1:]
+	}
+	stdout, exitCode, runErr := runner.Run(runName, runArgs)
 	if runErr != nil {
 		return fmt.Errorf("run command: %w", runErr)
 	}
