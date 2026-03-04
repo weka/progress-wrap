@@ -118,8 +118,6 @@ func runRoot(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	dbg.Header(now(), cmdStr, flagState, flagEstimator)
-
 	// Build parser sources: CLI inline > config file > built-ins
 	var sources [][]parser.Entry
 
@@ -151,7 +149,15 @@ func runRoot(cmd *cobra.Command, args []string) error {
 	}
 	sources = append(sources, builtins)
 
-	selectedParser := parser.Select(cmdStr, sources...)
+	selectedEntry := parser.Select(cmdStr, sources...)
+
+	// Prefer the estimator hint from the matched parser entry; fall back to the flag.
+	activeEstimator := flagEstimator
+	if selectedEntry != nil && selectedEntry.Estimator != "" {
+		activeEstimator = selectedEntry.Estimator
+	}
+
+	dbg.Header(now(), cmdStr, flagState, activeEstimator)
 
 	// Run the wrapped command
 	stdout, exitCode, runErr := runner.Run(args[0], args[1:])
@@ -163,8 +169,8 @@ func runRoot(cmd *cobra.Command, args []string) error {
 	dbg.Capture("stdout", stdout)
 	var progress float64
 	var found bool
-	if selectedParser != nil {
-		progress, found, err = selectedParser.Parse(stdout)
+	if selectedEntry != nil {
+		progress, found, err = selectedEntry.Parser.Parse(stdout)
 		dbg.ParseResult("stdout", progress, found, err)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "warning: parser error: %v\n", err)
@@ -197,7 +203,7 @@ func runRoot(cmd *cobra.Command, args []string) error {
 		// so that s.Samples[last] is the previous observation and
 		// est.Update(progress, now) computes a real time delta.
 		var est estimator.Estimator
-		switch flagEstimator {
+		switch activeEstimator {
 		case estimator.TypeIMM:
 			if s.Estimator.IMMSnapshot != nil {
 				est = estimator.NewIMMEstimatorFromState(s.Estimator.IMMSnapshot)

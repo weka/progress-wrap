@@ -19,6 +19,7 @@ type entryConfig struct {
 	Pattern      string `toml:"pattern"`
 	Group        int    `toml:"group"`
 	Expression   string `toml:"expression"`
+	Estimator    string `toml:"estimator"`
 }
 
 type config struct {
@@ -50,6 +51,7 @@ func loadTOML(data []byte) ([]parser.Entry, error) {
 		if err != nil {
 			return nil, err
 		}
+		entry.Estimator = ec.Estimator
 		entries = append(entries, entry)
 	}
 	return entries, nil

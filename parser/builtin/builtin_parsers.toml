@@ -22,6 +22,7 @@ type          = "regex"
 #   weka cluster task | grep -w FSCK
 pattern       = '(\d+(?:\.\d+)?)\s+(?:True|False)'
 group         = 1
+estimator     = "ema"
 
 # Generic catch-all: matches any command whose output contains "Progress: X%"
 [[parsers]]

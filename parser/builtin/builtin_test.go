@@ -19,8 +19,8 @@ func TestBuiltins_WekaStatusRegex(t *testing.T) {
 	entries, err := builtin.Load()
 	require.NoError(t, err)
 
-	p := parser.Select("weka status", entries)
-	require.NotNil(t, p, "expected a parser for 'weka status'")
+	entry := parser.Select("weka status", entries)
+	require.NotNil(t, entry, "expected a parser for 'weka status'")
 
 	cases := []struct {
 		name   string
@@ -41,7 +41,7 @@ func TestBuiltins_WekaStatusRegex(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			prog, found, err := p.Parse([]byte(tc.output))
+			prog, found, err := entry.Parser.Parse([]byte(tc.output))
 			require.NoError(t, err)
 			assert.True(t, found)
 			assert.InDelta(t, tc.want, prog, 1e-6)
@@ -90,10 +90,10 @@ func TestBuiltins_WekaClusterTask(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			p := parser.Select(tc.command, entries)
-			require.NotNil(t, p, "expected a parser for %q", tc.command)
+			entry := parser.Select(tc.command, entries)
+			require.NotNil(t, entry, "expected a parser for %q", tc.command)
 
-			prog, found, err := p.Parse([]byte(tc.output))
+			prog, found, err := entry.Parser.Parse([]byte(tc.output))
 			require.NoError(t, err)
 			assert.True(t, found)
 			assert.InDelta(t, tc.want, prog, 1e-6)
@@ -101,15 +101,33 @@ func TestBuiltins_WekaClusterTask(t *testing.T) {
 	}
 }
 
+func TestBuiltins_WekaClusterTaskEstimator(t *testing.T) {
+	entries, err := builtin.Load()
+	require.NoError(t, err)
+
+	entry := parser.Select("weka cluster task", entries)
+	require.NotNil(t, entry)
+	assert.Equal(t, "ema", entry.Estimator)
+}
+
+func TestBuiltins_WekaStatusEstimatorNotSet(t *testing.T) {
+	entries, err := builtin.Load()
+	require.NoError(t, err)
+
+	entry := parser.Select("weka status", entries)
+	require.NotNil(t, entry)
+	assert.Equal(t, "", entry.Estimator) // uses global default
+}
+
 func TestBuiltins_WekaStatusJSON(t *testing.T) {
 	entries, err := builtin.Load()
 	require.NoError(t, err)
 
-	p := parser.Select("weka status -J", entries)
-	require.NotNil(t, p, "expected a parser for 'weka status -J'")
+	entry := parser.Select("weka status -J", entries)
+	require.NotNil(t, entry, "expected a parser for 'weka status -J'")
 
 	sampleJSON := []byte(`{"progress": 0.65}`)
-	prog, found, err := p.Parse(sampleJSON)
+	prog, found, err := entry.Parser.Parse(sampleJSON)
 	require.NoError(t, err)
 	assert.True(t, found)
 	assert.InDelta(t, 0.65, prog, 1e-9)

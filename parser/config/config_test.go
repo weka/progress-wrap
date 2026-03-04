@@ -59,7 +59,7 @@ group         = 1
 
 	p := parser.Select("myapp status", entries)
 	require.NotNil(t, p)
-	prog, found, _ := p.Parse([]byte("50%"))
+	prog, found, _ := p.Parser.Parse([]byte("50%"))
 	assert.True(t, found)
 	assert.InDelta(t, 0.50, prog, 1e-9)
 }

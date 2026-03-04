@@ -18,8 +18,8 @@ func TestSelect_FirstSourceMatchWins(t *testing.T) {
 	e2 := parser.Entry{CommandRegex: "^weka", Parser: &mockParser{0.9}}
 
 	got := parser.Select("weka status", []parser.Entry{e1, e2})
-	assert.NotNil(t, got)
-	prog, found, _ := got.Parse(nil)
+	require.NotNil(t, got)
+	prog, found, _ := got.Parser.Parse(nil)
 	assert.True(t, found)
 	assert.Equal(t, 0.5, prog)
 }
@@ -51,7 +51,21 @@ func TestSelect_MultipleSourcePriority(t *testing.T) {
 	s0 := []parser.Entry{{CommandRegex: "^nope$", Parser: &mockParser{0.1}}}
 	s1 := []parser.Entry{{CommandRegex: "^weka$", Parser: &mockParser{0.7}}}
 	got := parser.Select("weka", s0, s1)
-	assert.NotNil(t, got)
-	prog, _, _ := got.Parse(nil)
+	require.NotNil(t, got)
+	prog, _, _ := got.Parser.Parse(nil)
 	assert.Equal(t, 0.7, prog)
+}
+
+func TestSelect_EstimatorHint(t *testing.T) {
+	e := parser.Entry{CommandRegex: "^myapp", Parser: &mockParser{0.5}, Estimator: "ema"}
+	got := parser.Select("myapp status", []parser.Entry{e})
+	require.NotNil(t, got)
+	assert.Equal(t, "ema", got.Estimator)
+}
+
+func TestSelect_NoEstimatorHint(t *testing.T) {
+	e := parser.Entry{CommandRegex: "^myapp", Parser: &mockParser{0.5}}
+	got := parser.Select("myapp status", []parser.Entry{e})
+	require.NotNil(t, got)
+	assert.Equal(t, "", got.Estimator) // caller uses global default
 }

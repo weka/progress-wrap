@@ -10,11 +10,13 @@ type Parser interface {
 	Parse(output []byte) (progress float64, found bool, err error)
 }
 
-// Entry pairs an optional command regex with a Parser.
-// If CommandRegex is empty, the entry matches any command.
+// Entry pairs an optional command regex with a Parser and an optional
+// estimator hint. If CommandRegex is empty, the entry matches any command.
+// If Estimator is empty, the global --estimator flag is used.
 type Entry struct {
 	CommandRegex string
 	Parser       Parser
+	Estimator    string // optional: overrides the global --estimator flag
 	compiled     *regexp.Regexp
 }
 
@@ -49,13 +51,13 @@ func (e *Entry) matches(cmdStr string) bool {
 	return e.compiled.MatchString(cmdStr)
 }
 
-// Select scans sources in order and returns the Parser from the first Entry
+// Select scans sources in order and returns a pointer to the first Entry
 // whose CommandRegex matches cmdStr. Returns nil if no match is found.
-func Select(cmdStr string, sources ...[]Entry) Parser {
+func Select(cmdStr string, sources ...[]Entry) *Entry {
 	for _, entries := range sources {
 		for i := range entries {
 			if entries[i].matches(cmdStr) {
-				return entries[i].Parser
+				return &entries[i]
 			}
 		}
 	}
