@@ -26,6 +26,7 @@ var (
 	flagParseRegex string
 	flagParseJQ    string
 	flagEMAAlpha   float64
+	flagDebug      bool
 )
 
 var rootCmd = &cobra.Command{
@@ -63,6 +64,7 @@ func init() {
 	rootCmd.Flags().StringVar(&flagParseRegex, "parse-regex", "", "Ad-hoc regex parser pattern")
 	rootCmd.Flags().StringVar(&flagParseJQ, "parse-jq", "", "Ad-hoc jq parser expression")
 	rootCmd.Flags().Float64Var(&flagEMAAlpha, "ema-alpha", 0.2, "EMA smoothing factor (0 < alpha <= 1)")
+	rootCmd.Flags().BoolVar(&flagDebug, "debug", false, "Write diagnostic log to <state-file>.debug.log")
 	rootCmd.MarkFlagsMutuallyExclusive("parse-regex", "parse-jq")
 	rootCmd.Flags().SetInterspersed(false)
 }
@@ -91,6 +93,18 @@ func runRoot(cmd *cobra.Command, args []string) error {
 		flagState = defaultStatePath(cmdStr)
 	}
 
+	// Initialise debug logger (path derived from state file).
+	dbgPath := ""
+	if flagDebug {
+		dbgPath = flagState + ".debug.log"
+	}
+	dbg, err := newDebugLogger(dbgPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "warning: %v\n", err)
+		dbg = &debugLogger{}
+	}
+	defer dbg.close()
+
 	// Handle --reset
 	if flagReset {
 		if err := state.Reset(flagState); err != nil {
@@ -103,6 +117,8 @@ func runRoot(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+
+	dbg.Header(now(), cmdStr, flagState, flagEstimator)
 
 	// Build parser sources: CLI inline > config file > built-ins
 	var sources [][]parser.Entry
@@ -144,16 +160,20 @@ func runRoot(cmd *cobra.Command, args []string) error {
 	}
 
 	// Parse progress
+	dbg.Capture("stdout", stdout)
 	var progress float64
 	var found bool
 	if selectedParser != nil {
 		progress, found, err = selectedParser.Parse(stdout)
+		dbg.ParseResult("stdout", progress, found, err)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "warning: parser error: %v\n", err)
 		}
 	} else {
 		fmt.Fprintf(os.Stderr, "warning: no parser matched command %q\n", cmdStr)
+		dbg.ParseResult("stdout", 0, false, fmt.Errorf("no parser matched %q", cmdStr))
 	}
+	dbg.StateContext(s, found, progress)
 
 	if found {
 		now := now()
